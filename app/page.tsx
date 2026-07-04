@@ -1,8 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/sign-out-button";
+import { UploadTest } from "@/components/upload-test";
 
 /**
- * Dashboard (placeholder per ora).
+ * Dashboard — per ora ospita il collaudo della pipeline.
  * Il middleware garantisce che qui l'utente sia sempre autenticato.
  */
 export default async function Home() {
@@ -21,11 +22,16 @@ export default async function Home() {
         </div>
       </header>
 
-      <section className="mt-10 rounded-lg border border-dashed p-10 text-center text-muted-foreground">
-        <p className="text-lg">Sei dentro. 🎉</p>
-        <p className="mt-1 text-sm">
-          Qui arriveranno upload e dashboard degli scontrini (Fase 3 e 4).
-        </p>
+      <section className="mt-10 space-y-4">
+        <div>
+          <h2 className="text-lg font-medium">Collaudo pipeline</h2>
+          <p className="text-sm text-muted-foreground">
+            Carica la foto di uno scontrino: la pipeline la manda al modello,
+            valida il JSON e salva su database. (UI provvisoria — Fase 4 in
+            arrivo.)
+          </p>
+        </div>
+        <UploadTest />
       </section>
     </main>
   );

@@ -2,12 +2,12 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
- * Middleware: gira su ogni richiesta (tranne gli asset statici, vedi matcher).
+ * Proxy (ex middleware): gira su ogni richiesta (tranne gli asset statici, vedi matcher).
  * Fa due cose:
  *  1. Rinfresca il token di sessione Supabase (che altrimenti scadrebbe).
  *  2. Protegge le route: se non sei loggato, redirect a /login.
  */
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(

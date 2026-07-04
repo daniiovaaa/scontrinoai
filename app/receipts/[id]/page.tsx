@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { DeleteReceiptButton } from "@/components/delete-receipt-button";
 
 const eur = new Intl.NumberFormat("it-IT", {
   style: "currency",
@@ -46,12 +47,15 @@ export default async function ReceiptDetail({
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
-      <Link
-        href="/"
-        className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
-      >
-        ← Torna alla dashboard
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link
+          href="/"
+          className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+        >
+          ← Torna alla dashboard
+        </Link>
+        <DeleteReceiptButton id={receipt.id} />
+      </div>
 
       <div className="mt-4 flex items-start justify-between gap-4">
         <div>
@@ -77,6 +81,8 @@ export default async function ReceiptDetail({
             ) : (
               "validato al primo tentativo"
             )}
+            {" · "}caricato il{" "}
+            {new Date(receipt.created_at).toLocaleDateString("it-IT")}
           </p>
         </div>
         {receipt.total != null && (

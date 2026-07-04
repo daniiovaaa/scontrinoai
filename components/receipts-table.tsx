@@ -39,7 +39,7 @@ export function ReceiptsTable({ receipts }: { receipts: ReceiptRow[] }) {
         <thead>
           <tr className="border-b bg-muted/50 text-left text-xs uppercase tracking-wider text-muted-foreground">
             <th className="px-4 py-3 font-medium">Esercente</th>
-            <th className="px-4 py-3 font-medium">Data</th>
+            <th className="px-4 py-3 font-medium">Data spesa</th>
             <th className="px-4 py-3 font-medium">Categoria</th>
             <th className="px-4 py-3 font-medium text-right">Totale</th>
             <th className="px-4 py-3 font-medium">Affidabilità</th>

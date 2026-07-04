@@ -20,9 +20,13 @@ export interface ExtractionResult {
  * IL CUORE DEL PROGETTO: pipeline estrazione → validazione → retry.
  *
  * 1. Manda l'immagine al modello con il prompt di estrazione.
- * 2. Parsa l'output come JSON e lo valida contro lo schema Zod
- *    (che include un check di coerenza aritmetica: somma voci = totale).
- * 3. Se la validazione fallisce, reinietta l'output + gli errori nel
+ * 2. Se il modello segnala che l'immagine non è un documento di spesa
+ *    (not_a_document), la pipeline fallisce SUBITO in modo pulito:
+ *    nessun retry, nessun dato inventato a database.
+ * 3. Altrimenti parsa l'output come JSON e lo valida contro lo schema Zod
+ *    (che include un check di coerenza aritmetica: somma voci = totale,
+ *    oppure totale al netto IVA nel caso delle fatture).
+ * 4. Se la validazione fallisce, reinietta l'output + gli errori nel
  *    prompt di retry e riprova, fino a MAX_ATTEMPTS.
  *
  * Ogni tentativo e ogni errore vengono tracciati: finiscono a DB
@@ -53,6 +57,22 @@ export async function extractReceipt(
         "L'output non è JSON valido: non è stato possibile fare il parsing."
       );
       continue;
+    }
+
+    // L'immagine non è un documento di spesa: fallimento pulito, subito.
+    // Niente retry (l'immagine non cambierà) e niente dati inventati a DB.
+    if ((parsed as { not_a_document?: boolean })?.not_a_document === true) {
+      errorLog.push({
+        attempt,
+        error: "Immagine non riconosciuta come scontrino/ricevuta/fattura",
+      });
+      return {
+        data: null,
+        attempts: attempt,
+        rawOutput: cleaned,
+        errorLog,
+        modelUsed: provider.modelName,
+      };
     }
 
     const result = receiptSchema.safeParse(parsed);

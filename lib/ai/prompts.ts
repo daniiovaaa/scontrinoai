@@ -34,13 +34,13 @@ Regole:
 - Non inventare voci che non vedi nell'immagine.
 - Se l'immagine NON è uno scontrino, una ricevuta o una fattura, rispondi
   esclusivamente con: {"not_a_document": true}
-- Se le voci di spesa sono troppo sfocate o illeggibili, restituisci
-  line_items: [] e confidence "low". È VIETATO inventare voci plausibili:
-  meglio un campo vuoto di un dato falso.
+- Se le voci sono COMPLETAMENTE illeggibili, restituisci line_items: [] e
+  confidence "low". Se sono leggibili anche solo parzialmente, estrai quelle
+  che leggi con ragionevole certezza e ometti le altre. È VIETATO inventare
+  voci non visibili: meglio un elenco incompleto di un dato falso.
 - Nelle FATTURE gli importi delle voci sono spesso IVA esclusa mentre il
   totale è IVA inclusa: in quel caso riporta gli importi COME STAMPATI,
-  senza modificarli.`
-;
+  senza modificarli.`;
 }
 
 /**

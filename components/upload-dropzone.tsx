@@ -1,16 +1,15 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 /**
  * Dropzone con:
  * - drag & drop + click + fotocamera su mobile (capture)
- * - compressione client-side (max 2000px, JPEG 85%): meno banda,
- *   meno storage, meno token verso il modello
- * - stati animati della pipeline: l'utente VEDE le fasi
- *   (upload → estrazione → validazione → esito, retry inclusi)
+ * - compressione client-side (max 2000px, JPEG 85%)
+ * - stati animati della pipeline + link diretto al dettaglio appena estratto
  */
 
 type Phase = "idle" | "uploading" | "extracting" | "validating" | "done" | "failed";
@@ -29,7 +28,6 @@ async function compressImage(file: File): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
 
-  // Già piccola e già JPEG: non ricomprimere.
   if (scale === 1 && file.type === "image/jpeg" && file.size < 2 * 1024 * 1024) {
     return file;
   }
@@ -61,9 +59,6 @@ export function UploadDropzone() {
       setResult(null);
       setPhase("uploading");
 
-      // Le fasi intermedie avanzano su timer mentre la richiesta è in volo:
-      // l'endpoint è una chiamata unica, ma l'utente vede il progresso reale
-      // della pipeline (l'esito finale arriva dai dati veri della risposta).
       const t1 = setTimeout(() => setPhase("extracting"), 1200);
       const t2 = setTimeout(() => setPhase("validating"), 6000);
 
@@ -86,7 +81,7 @@ export function UploadDropzone() {
 
         setResult(json);
         setPhase(json.status === "completed" ? "done" : "failed");
-        router.refresh(); // ricarica i dati server-side della dashboard
+        router.refresh();
       } catch {
         clearTimeout(t1);
         clearTimeout(t2);
@@ -128,7 +123,7 @@ export function UploadDropzone() {
         }}
         onClick={() => !busy && inputRef.current?.click()}
         className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors ${
-          dragOver ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-muted-foreground/50"
+          dragOver ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/40"
         } ${busy ? "pointer-events-none opacity-70" : ""}`}
       >
         <span className="text-3xl">🧾</span>
@@ -153,12 +148,23 @@ export function UploadDropzone() {
       </div>
 
       {phase !== "idle" && (
-        <div className="mt-4 flex items-center justify-between rounded-lg border bg-muted/40 px-4 py-3 text-sm">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-card px-4 py-3 text-sm">
           <span className={busy ? "animate-pulse" : ""}>{phaseLabel[phase]}</span>
+
           {(phase === "done" || phase === "failed") && (
-            <Button variant="ghost" size="sm" onClick={() => setPhase("idle")}>
-              Carica un altro
-            </Button>
+            <span className="flex items-center gap-2">
+              {result?.id && (
+                <Link
+                  href={`/receipts/${result.id}`}
+                  className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                >
+                  {phase === "done" ? "Vedi i dati estratti →" : "Vedi dettagli →"}
+                </Link>
+              )}
+              <Button variant="ghost" size="sm" onClick={() => setPhase("idle")}>
+                Carica un altro
+              </Button>
+            </span>
           )}
         </div>
       )}

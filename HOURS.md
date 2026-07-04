@@ -11,3 +11,5 @@
 - 2026-07-04 · ~0.75h · Dashboard: dropzone con compressione client-side e stati pipeline, statistiche, grafico categorie, dettaglio con immagine, export CSV
 
 - 2026-07-04 · ~0.1h · Restyling: tema dark fisso con accent ambra, grafico e badge ricalibrati, foto incorniciate
+
+- 2026-07-04 · ~0.5h · UX post-collaudo: link al dettaglio dopo l'estrazione, colonna "data spesa", eliminazione documenti (endpoint + storage), prompt graduato su voci parziali

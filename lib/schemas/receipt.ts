@@ -40,14 +40,18 @@ export const receiptSchema = z
     confidence: z.enum(["high", "medium", "low"]),
   })
   .refine(
-    (r) =>
-      r.line_items.length === 0 ||
-      Math.abs(
-        r.line_items.reduce((sum, item) => sum + item.amount, 0) - r.total
-      ) < 0.05,
+    (r) => {
+      if (r.line_items.length === 0) return true;
+      const sum = r.line_items.reduce((s, i) => s + i.amount, 0);
+      const close = (a: number, b: number) => Math.abs(a - b) < 0.05;
+      return (
+        close(sum, r.total) ||
+        (r.vat_amount != null && close(sum, r.total - r.vat_amount))
+      );
+    },
     {
       message:
-        "La somma degli importi in line_items non corrisponde a total: ricontrolla i numeri sullo scontrino",
+        "La somma delle voci non corrisponde né al totale né al totale al netto IVA: ricontrolla i numeri come stampati, senza modificarli",
       path: ["line_items"],
     }
   );

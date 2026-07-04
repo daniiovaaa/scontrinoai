@@ -31,7 +31,16 @@ Regole:
   Se non torna, ricontrolla i numeri prima di rispondere.
 - Se un campo è illeggibile: null per i campi nullable, la tua migliore stima
   per gli altri, e abbassa "confidence".
-- Non inventare voci che non vedi nell'immagine.`;
+- Non inventare voci che non vedi nell'immagine.
+- Se l'immagine NON è uno scontrino, una ricevuta o una fattura, rispondi
+  esclusivamente con: {"not_a_document": true}
+- Se le voci di spesa sono troppo sfocate o illeggibili, restituisci
+  line_items: [] e confidence "low". È VIETATO inventare voci plausibili:
+  meglio un campo vuoto di un dato falso.
+- Nelle FATTURE gli importi delle voci sono spesso IVA esclusa mentre il
+  totale è IVA inclusa: in quel caso riporta gli importi COME STAMPATI,
+  senza modificarli.`
+;
 }
 
 /**

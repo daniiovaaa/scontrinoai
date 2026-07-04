@@ -48,7 +48,12 @@ export default async function Home() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
       <header className="flex items-center justify-between border-b pb-4">
-        <h1 className="text-xl font-semibold tracking-tight">🧾 ScontrinoAI</h1>
+        <h1 className="flex items-center gap-2 text-xl font-semibold tracking-tight">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15 text-base">
+            🧾
+          </span>
+          Scontrino<span className="text-primary">AI</span>
+        </h1>
         <div className="flex items-center gap-3">
           <span className="hidden text-sm text-muted-foreground sm:inline">
             {user?.email}
@@ -64,15 +69,19 @@ export default async function Home() {
 
       {/* Statistiche */}
       <section className="mt-8 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border p-5">
-          <p className="text-sm text-muted-foreground">Totale spese</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums">
+        <div className="rounded-xl border bg-card p-5 transition-colors hover:border-primary/40">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            💰 Totale spese
+          </p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums text-primary">
             {eur.format(grandTotal)}
           </p>
         </div>
-        <div className="rounded-xl border p-5">
-          <p className="text-sm text-muted-foreground">Documenti elaborati</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums">
+        <div className="rounded-xl border bg-card p-5 transition-colors hover:border-primary/40">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            📄 Documenti elaborati
+          </p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums">
             {completed.length}
             {receipts.length > completed.length && (
               <span className="ml-2 text-sm font-normal text-muted-foreground">
@@ -81,9 +90,11 @@ export default async function Home() {
             )}
           </p>
         </div>
-        <div className="rounded-xl border p-5">
-          <p className="text-sm text-muted-foreground">Categoria principale</p>
-          <p className="mt-1 truncate text-2xl font-semibold">{topCategory}</p>
+        <div className="rounded-xl border bg-card p-5 transition-colors hover:border-primary/40">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            🏆 Categoria principale
+          </p>
+          <p className="mt-2 truncate text-2xl font-semibold">{topCategory}</p>
         </div>
       </section>
 
@@ -98,11 +109,16 @@ export default async function Home() {
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-medium">Documenti</h2>
           {completed.length > 0 && (
-            <a href="/api/export" className="inline-flex h-8 items-center gap-1 rounded-md border border-input bg-background px-3 text-sm font-medium shadow-sm transition-colors hover:bg-muted">⬇️ Esporta CSV</a>
+            <a href="/api/export" className="inline-flex h-8 items-center gap-1 rounded-md border border-input bg-card px-3 text-sm font-medium transition-colors hover:border-primary/50 hover:text-primary">⬇️ Esporta CSV</a>
           )}
         </div>
         <ReceiptsTable receipts={receipts} />
       </section>
+
+      <footer className="mt-12 border-t pt-4 text-center text-xs text-muted-foreground">
+        ScontrinoAI — pipeline di estrazione dati con validazione e retry ·
+        Next.js + Supabase + Gemini
+      </footer>
     </main>
   );
 }

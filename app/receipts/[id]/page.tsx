@@ -48,7 +48,7 @@ export default async function ReceiptDetail({
     <main className="mx-auto max-w-5xl px-4 py-8">
       <Link
         href="/"
-        className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+        className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
       >
         ← Torna alla dashboard
       </Link>
@@ -70,14 +70,18 @@ export default async function ReceiptDetail({
               : "Data non disponibile"}
             {" · "}modello: {receipt.model_used ?? "—"}
             {" · "}
-            {receipt.attempts > 1
-              ? `⟳ validato al tentativo ${receipt.attempts}`
-              : "validato al primo tentativo"}
+            {receipt.attempts > 1 ? (
+              <span className="text-amber-400">
+                ⟳ validato al tentativo {receipt.attempts}
+              </span>
+            ) : (
+              "validato al primo tentativo"
+            )}
           </p>
         </div>
         {receipt.total != null && (
           <div className="text-right">
-            <p className="text-3xl font-semibold tabular-nums">
+            <p className="text-3xl font-semibold tabular-nums text-primary">
               {eur.format(receipt.total)}
             </p>
             {receipt.vat_amount != null && (
@@ -91,14 +95,14 @@ export default async function ReceiptDetail({
       </div>
 
       <div className="mt-8 grid gap-8 md:grid-cols-2">
-        {/* Immagine originale */}
-        <div className="overflow-hidden rounded-xl border bg-muted/20">
+        {/* Immagine originale, incorniciata per non "bucare" il tema scuro */}
+        <div className="rounded-xl border bg-card p-3">
           {signed?.signedUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={signed.signedUrl}
               alt={`Scontrino ${receipt.merchant ?? ""}`}
-              className="max-h-[70vh] w-full object-contain"
+              className="max-h-[70vh] w-full rounded-lg object-contain"
             />
           ) : (
             <div className="flex h-64 items-center justify-center text-sm text-muted-foreground">
@@ -110,13 +114,13 @@ export default async function ReceiptDetail({
         {/* Dati estratti */}
         <div className="space-y-4">
           {receipt.category && (
-            <span className="inline-block rounded-full bg-muted px-3 py-1 text-sm">
+            <span className="inline-block rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground">
               {String(receipt.category).replace("_", "/")}
             </span>
           )}
 
           {items.length > 0 ? (
-            <div className="rounded-lg border">
+            <div className="rounded-xl border bg-card">
               <table className="w-full text-sm">
                 <tbody>
                   {items.map((item, i) => (
@@ -144,7 +148,17 @@ export default async function ReceiptDetail({
           {receipt.confidence && (
             <p className="text-sm">
               Affidabilità dichiarata dal modello:{" "}
-              <strong>{receipt.confidence}</strong>
+              <strong
+                className={
+                  receipt.confidence === "high"
+                    ? "text-emerald-400"
+                    : receipt.confidence === "medium"
+                      ? "text-amber-400"
+                      : "text-red-400"
+                }
+              >
+                {receipt.confidence}
+              </strong>
               {receipt.confidence === "low" &&
                 " — consigliata verifica manuale dei dati"}
             </p>
@@ -153,13 +167,13 @@ export default async function ReceiptDetail({
       </div>
 
       {/* Trasparenza pipeline: output grezzo + error log */}
-      <details className="mt-10 rounded-lg border bg-muted/20 p-4">
-        <summary className="cursor-pointer text-sm font-medium">
+      <details className="mt-10 rounded-xl border bg-card p-4">
+        <summary className="cursor-pointer text-sm font-medium transition-colors hover:text-primary">
           🔬 Dietro le quinte: output grezzo del modello e log della pipeline
         </summary>
         <div className="mt-3 space-y-3">
           <div>
-            <p className="mb-1 text-xs font-medium uppercase text-muted-foreground">
+            <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               raw_extraction
             </p>
             <pre className="max-h-64 overflow-auto rounded-md bg-background p-3 text-xs">
@@ -168,7 +182,7 @@ export default async function ReceiptDetail({
           </div>
           {receipt.error_log && (
             <div>
-              <p className="mb-1 text-xs font-medium uppercase text-muted-foreground">
+              <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 error_log (tentativi falliti e motivi)
               </p>
               <pre className="max-h-64 overflow-auto rounded-md bg-background p-3 text-xs">

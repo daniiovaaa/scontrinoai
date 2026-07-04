@@ -9,3 +9,5 @@
 - 2026-07-04 · ~0.25h · Hardening pipeline: guardrail non-documento, fatture IVA esclusa, stop voci inventate + re-test (5/5)
 
 - 2026-07-04 · ~0.75h · Dashboard: dropzone con compressione client-side e stati pipeline, statistiche, grafico categorie, dettaglio con immagine, export CSV
+
+- 2026-07-04 · ~0.1h · Restyling: tema dark fisso con accent ambra, grafico e badge ricalibrati, foto incorniciate
